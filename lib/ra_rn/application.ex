@@ -4,8 +4,7 @@ defmodule RaRn.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-    ]
+    children = []
 
     opts = [strategy: :one_for_one, name: RaRn.Supervisor]
     Supervisor.start_link(children, opts)
