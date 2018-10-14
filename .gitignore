@@ -22,3 +22,5 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 ra_rn-*.tar
 
+/config/secret.exs
+
