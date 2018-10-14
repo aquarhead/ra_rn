@@ -3,14 +3,14 @@ defmodule RaRn.Repo do
 
   defstruct [
     :repo,
-    :latest_release,
+    :latest_release
   ]
 
   @impl true
-  def init(%{repo: repo}) do
+  def init(%{repo: repo, latest_release: latest_release}) do
     %__MODULE__{
       repo: repo,
-      latest_release: nil,
+      latest_release: latest_release
     }
   end
 
@@ -23,6 +23,13 @@ defmodule RaRn.Repo do
   def apply(_meta, {:latest_release, latest_release}, effects, state) do
     new_state = %__MODULE__{state | latest_release: latest_release}
     {new_state, effects, :ok}
+  end
+
+  def apply(_meta, {:new_releases, new_releases}, effects, state) do
+    output_cmd = {:mod_call, IO, :inspect, [new_releases]}
+    new_state = %__MODULE__{state | latest_release: Enum.at(new_releases, 0)}
+
+    {new_state, [output_cmd | effects], :ok}
   end
 
   def apply(_meta, :show, effects, state) do

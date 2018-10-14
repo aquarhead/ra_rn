@@ -5,7 +5,6 @@
 ## Playground
 
 ```
-{:ok, [server | _], _} = RaRn.track_repo("elixir-lang/elixir")
-RaRn.ReleaseChecker.start_link("elixir-lang", "elixir", server)
+[server | _] = RaRn.track_repo("elixir-lang/elixir")
 :ra.process_command(server, :show)
 ```

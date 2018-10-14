@@ -21,16 +21,22 @@ defmodule RaRn.ReleaseChecker do
       ra_server: ra_server
     }
 
-    {:ok, init_state, {:continue, :query_latest}}
+    Process.send_after(self(), :query_new, :timer.seconds(5))
+
+    {:ok, init_state}
   end
 
   @impl true
-  def handle_continue(:query_latest, state) do
-    latest_release = GraphClient.query_latest_release(state.owner, state.name)
-    :ra.process_command(state.ra_server, {:latest_release, latest_release})
+  def handle_info(:query_new, state) do
+    {:ok, latest_release, leader} = :ra.process_command(state.ra_server, :show)
+    new_releases = GraphClient.query_new_releases(state.owner, state.name, latest_release.cursor)
 
-    # Process.send_after(self(), :query_new, )
+    if length(new_releases) > 0 do
+      :ra.process_command(leader, {:new_releases, new_releases})
+    end
 
-    {:noreply, state}
+    Process.send_after(self(), :query_new, :timer.seconds(5))
+
+    {:noreply, %__MODULE__{state | ra_server: leader}}
   end
 end
