@@ -19,26 +19,7 @@ defmodule RaRn.GraphClient do
   @query_latest """
   {
     repository(owner: "<%= owner %>", name: "<%= name %>") {
-      releases(first: 1, orderBy: {field: CREATED_AT, direction: DESC}) {
-        edges{
-          cursor
-          node {
-            tag {
-              name
-            }
-            url
-          }
-        }
-      }
-    }
-  }
-  """
-
-  @page_size 5
-  @query_with_cursor """
-  {
-    repository(owner: "<%= owner %>", name: "<%= name %>") {
-      releases(before: "<%= cursor %>", last: #{@page_size}, orderBy: {field: CREATED_AT, direction: DESC}) {
+      releases(first: 2, orderBy: {field: CREATED_AT, direction: DESC}) {
         edges{
           cursor
           node {
@@ -59,13 +40,33 @@ defmodule RaRn.GraphClient do
 
     case post("/graphql", query_body) do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
-        latest_release =
-          body["data"]["repository"]["releases"]["edges"] |> Enum.at(0) |> to_release_info()
+        body["data"]["repository"]["releases"]["edges"]
+        |> Enum.at(1)
+        |> to_release_info()
 
       err ->
         err
     end
   end
+
+  @page_size 5
+  @query_with_cursor """
+  {
+    repository(owner: "<%= owner %>", name: "<%= name %>") {
+      releases(before: "<%= cursor %>", last: #{@page_size}, orderBy: {field: CREATED_AT, direction: DESC}) {
+        edges{
+          cursor
+          node {
+            tag {
+              name
+            }
+            url
+          }
+        }
+      }
+    }
+  }
+  """
 
   def query_new_releases(owner, name, cursor) do
     doc = EEx.eval_string(@query_with_cursor, owner: owner, name: name, cursor: cursor)
@@ -73,8 +74,8 @@ defmodule RaRn.GraphClient do
 
     case post("/graphql", query_body) do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
-        new_releases =
-          body["data"]["repository"]["releases"]["edges"] |> Enum.map(&to_release_info/1)
+        body["data"]["repository"]["releases"]["edges"]
+        |> Enum.map(&to_release_info/1)
 
       err ->
         err
