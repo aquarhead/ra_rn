@@ -20,7 +20,12 @@ defmodule RaRn.MixProject do
 
   defp deps do
     [
-      {:ra, github: "rabbitmq/ra"}
+      {:ra, github: "rabbitmq/ra"},
+
+      # http requests
+      {:hackney, "~> 1.14"},
+      {:tesla, "~> 1.1"},
+      {:jason, "~> 1.1"}
     ]
   end
 end
