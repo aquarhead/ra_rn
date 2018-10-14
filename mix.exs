@@ -13,7 +13,7 @@ defmodule RaRn.MixProject do
 
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :sasl],
       mod: {RaRn.Application, []}
     ]
   end
