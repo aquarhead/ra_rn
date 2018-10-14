@@ -2,36 +2,17 @@ defmodule RaRn.Repo do
   @behaviour :ra_machine
 
   defstruct [
-    :cluster_id,
     :repo,
     :latest_release,
-    :rc_pid,
-    :ra_server_name
   ]
 
   @impl true
-  def init(%{repo: repo, name: ra_server_name}) do
-    # ensure valid repo string (should move to outer API later)
-    [_owner, _name] = String.split(repo, "/")
-
+  def init(%{repo: repo}) do
     %__MODULE__{
       repo: repo,
       latest_release: nil,
-      rc_pid: nil,
-      ra_server_name: ra_server_name
     }
   end
-
-  @impl true
-  def state_enter(:leader, state) do
-    # start ReleaseChecker when becoming a leader
-    [owner, name] = String.split(state.repo, "/")
-    # {:ok, pid} = .start_link() # TODO make into an effect list
-    # [{:mod_call, RaRn.ReleaseChecker, :start_link, [owner, name, state.ra_server_name]}]
-    []
-  end
-
-  def state_enter(_, _state), do: []
 
   @impl true
   def overview(state) do
