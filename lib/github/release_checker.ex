@@ -1,6 +1,7 @@
 defmodule RaRn.ReleaseChecker do
   use GenServer
   alias RaRn.GraphClient
+  alias RaRn.Repo
 
   defstruct [
     :owner,
@@ -28,11 +29,11 @@ defmodule RaRn.ReleaseChecker do
 
   @impl true
   def handle_info(:query_new, state) do
-    {:ok, latest_release, leader} = :ra.process_command(state.ra_server, :show)
+    {:ok, latest_release, leader} = Repo.query_latest_release(state.ra_server)
     new_releases = GraphClient.query_new_releases(state.owner, state.name, latest_release.cursor)
 
     if length(new_releases) > 0 do
-      :ra.process_command(leader, {:new_releases, new_releases})
+      Repo.add_new_releases(leader, new_releases)
     end
 
     Process.send_after(self(), :query_new, :timer.seconds(5))

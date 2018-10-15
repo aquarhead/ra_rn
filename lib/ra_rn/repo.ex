@@ -6,6 +6,14 @@ defmodule RaRn.Repo do
     :latest_release
   ]
 
+  def add_new_releases(server, new_releases) do
+    :ra.process_command(server, {:new_releases, new_releases})
+  end
+
+  def query_latest_release(server) do
+    :ra.consistent_query(server, fn state -> state.latest_release end)
+  end
+
   @impl true
   def init(%{repo: repo, latest_release: latest_release}) do
     %__MODULE__{
@@ -20,19 +28,10 @@ defmodule RaRn.Repo do
   end
 
   @impl true
-  def apply(_meta, {:latest_release, latest_release}, effects, state) do
-    new_state = %__MODULE__{state | latest_release: latest_release}
-    {new_state, effects, :ok}
-  end
-
   def apply(_meta, {:new_releases, new_releases}, effects, state) do
     output_cmd = {:mod_call, IO, :inspect, [new_releases]}
     new_state = %__MODULE__{state | latest_release: Enum.at(new_releases, 0)}
 
     {new_state, [output_cmd | effects], :ok}
-  end
-
-  def apply(_meta, :show, effects, state) do
-    {state, effects, state.latest_release}
   end
 end
