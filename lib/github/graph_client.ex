@@ -19,7 +19,7 @@ defmodule RaRn.GraphClient do
   @query_latest """
   {
     repository(owner: "<%= owner %>", name: "<%= name %>") {
-      releases(first: 2, orderBy: {field: CREATED_AT, direction: DESC}) {
+      releases(first: 1, orderBy: {field: CREATED_AT, direction: DESC}) {
         edges{
           cursor
           node {
@@ -41,7 +41,7 @@ defmodule RaRn.GraphClient do
     case post("/graphql", query_body) do
       {:ok, %Tesla.Env{status: 200, body: body}} ->
         body["data"]["repository"]["releases"]["edges"]
-        |> Enum.at(1)
+        |> Enum.at(0)
         |> to_release_info()
 
       err ->

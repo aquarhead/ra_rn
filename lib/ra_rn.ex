@@ -5,6 +5,7 @@ defmodule RaRn do
     [owner, name] = String.split(repo, "/")
 
     latest_release = RaRn.GraphClient.query_latest_release(owner, name)
+    RaRn.Notification.notify_all(repo, latest_release)
 
     servers = [{:server1, node()}, {:server2, node()}, {:server3, node()}]
     cluster_id = repo
