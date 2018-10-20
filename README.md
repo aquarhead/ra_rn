@@ -6,5 +6,5 @@
 
 ```
 [server | _] = RaRn.track_repo("elixir-lang/elixir")
-:ra.process_command(server, :show)
+RaRn.Repo.query_latest_release(server)
 ```
