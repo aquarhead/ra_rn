@@ -25,7 +25,10 @@ defmodule RaRn.MixProject do
       # http requests
       {:hackney, "~> 1.14"},
       {:tesla, "~> 1.1"},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+
+      # clustering
+      {:libcluster, "~> 3.0"}
     ]
   end
 end

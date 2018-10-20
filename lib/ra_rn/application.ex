@@ -4,7 +4,11 @@ defmodule RaRn.Application do
   use Application
 
   def start(_type, _args) do
-    children = []
+    topologies = Application.get_env(:ra_rn, :libcluster)
+
+    children = [
+      {Cluster.Supervisor, [topologies, [name: RaRn.ClusterSup]]}
+    ]
 
     opts = [strategy: :one_for_one, name: RaRn.Supervisor]
     Supervisor.start_link(children, opts)
