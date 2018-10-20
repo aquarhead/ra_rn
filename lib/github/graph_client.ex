@@ -7,14 +7,14 @@ defmodule RaRn.GraphClient do
 
   @token Application.get_env(:ra_rn, :github_token)
 
-  plug(Tesla.Middleware.Headers, [
+  plug Tesla.Middleware.Headers, [
     {"user-agent", "github.com/aquarhead/ra_rn"},
     {"authorization", "bearer #{@token}"}
-  ])
+  ]
 
-  plug(Tesla.Middleware.JSON)
-  plug(Tesla.Middleware.Retry, delay: 500, max_retries: 3)
-  plug(Tesla.Middleware.BaseUrl, "https://api.github.com")
+  plug Tesla.Middleware.JSON
+  plug Tesla.Middleware.Retry, delay: 500, max_retries: 3
+  plug Tesla.Middleware.BaseUrl, "https://api.github.com"
 
   @query_latest """
   {
