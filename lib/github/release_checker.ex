@@ -6,7 +6,8 @@ defmodule RaRn.ReleaseChecker do
   defstruct [
     :owner,
     :name,
-    :ra_server
+    :ra_server,
+    :interval
   ]
 
   def start_link(owner, name, ra_server) do
@@ -16,13 +17,16 @@ defmodule RaRn.ReleaseChecker do
 
   @impl true
   def init(owner: owner, name: name, ra_server: ra_server) do
+    interval = Application.get_env(:ra_rn, __MODULE__)[:interval]
+
     init_state = %__MODULE__{
       owner: owner,
       name: name,
-      ra_server: ra_server
+      ra_server: ra_server,
+      interval: interval
     }
 
-    Process.send_after(self(), :query_new, :timer.seconds(5))
+    Process.send_after(self(), :query_new, interval)
 
     {:ok, init_state}
   end
@@ -36,7 +40,7 @@ defmodule RaRn.ReleaseChecker do
       Repo.add_new_releases(leader, new_releases)
     end
 
-    Process.send_after(self(), :query_new, :timer.seconds(5))
+    Process.send_after(self(), :query_new, state.interval)
 
     {:noreply, %__MODULE__{state | ra_server: leader}}
   end
