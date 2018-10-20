@@ -29,9 +29,11 @@ defmodule RaRn.Repo do
 
   @impl true
   def apply(_meta, {:new_releases, new_releases}, effects, state) do
-    output_cmd = {:mod_call, IO, :inspect, [new_releases]}
-    new_state = %__MODULE__{state | latest_release: Enum.at(new_releases, 0)}
+    new_latest = Enum.at(new_releases, 0)
+    new_state = %__MODULE__{state | latest_release: new_latest}
 
-    {new_state, [output_cmd | effects], :ok}
+    notify_cmd = {:mod_call, RaRn.Notification, :notify_all, [state.repo, new_latest]}
+
+    {new_state, [notify_cmd | effects], :ok}
   end
 end
