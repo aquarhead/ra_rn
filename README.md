@@ -5,6 +5,5 @@
 ## Playground
 
 ```
-[server | _] = RaRn.track_repo("elixir-lang/elixir")
-RaRn.Repo.query_latest_release(server)
+RaRn.track_repo("elixir-lang/elixir")
 ```
